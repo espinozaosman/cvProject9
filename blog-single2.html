@@ -155,40 +155,43 @@
                         <div class="col-md-8">
                             <article class="post-inner">
                                 <div class="post-media">
-                                    <img src="assets/images/image-box/photo-1461016951828-c09537329b3a.jpeg" alt="images">
+                                    <img src="assets/images/image-box/photo-1503789146722-cf137a3c0fea.png" alt="images">
                                 </div>
                                 <div class="post-content margin-bottom-38">
                                     <ul class="post-meta">
                                         <li class="author section-14px-regular"><a href="blog.html">Karolos Mellatos</a></li>
-                                        <li class="date section-14px-regular"><a href="blog.html">8 Nov, 2021</a></li>
+                                        <li class="date section-14px-regular"><a href="blog.html">3 Nov, 2021</a></li>
                                     </ul>
-                                    <h2 class="section-24px-montserrat">Tracing user interactions with React</h2>
-                                    <p class="margin-top-20 margin-bottom-25">In my post "React Production Performance Monitoring", I show you how to use React's Profiler component to monitor the performance of your application in production. The information you get from this is useful, but really all it can tell you is: "Hey, the mount/update for this tree of components took x amount of time." Then you can graph that data and identify spikes/regressions in performance for that part of your app.</p>
-                                    <p class="margin-bottom-15">It would be even useful to have information about what interactions the user performed to trigger that update. For example: "Based on the data we have, when the user clicks the dropdown toggle button, the dropdown update is fast, but when they type into the field, the dropdown update is slower."</p>
-                                    <p class="margin-bottom-15">Another benefit to interaction tracing is it adds some context to what you can visualize in the React DevTools Profiler tab. We'll get a look at that soon.</p>
-                                    <h3 class="margin-bottom-15">Basic usage</h3>
-                                    <p class="margin-bottom-15">React does all of its scheduling through the scheduler package. Normally you don't interact with this directly, but this package is where you're going to get the APIs to instrument your components for interaction tracing.</p>
-                                    <p class="margin-bottom-15">Let's say you have a simple greeting component:</p>
+                                    <h2 class="section-24px-montserrat">You've probably heard of ESLint, Prettier, and TypeScript. These are static code analysis tools that are wildly popular in the JavaScript ecosystem. I consider them all testing tools. Let's take a look at each:</h2>
+                                    <p class="margin-top-20 margin-bottom-25">ESLint is the pluggable linting utility for JavaScript. Linting is the process of analyzing code for potential errors without actually running the code. Consider this code:</p>
                                     <div class="post-media">
-                                        <img src="assets/images/image-box/blog-1-1.png" alt="images">
+                                        <img src="assets/images/image-box/blog-2-1.png" alt="images">
                                     </div>
-                                    <p class="margin-bottom-15">When setGreeting is called, that triggers a state update. Let's assume we have reason to measure this interaction and monitor it in the long term (you don't necessarily want to add this complexity for every interaction). Here's how we'd do that:</p>
+                                    <p class="margin-bottom-15">Do you spot the problem? If you do, that's great! But don't you think it'd be cool to not have to use your brain power to find and correct subtle bugs like this one? I do! Make a computer do as much of my work for me as possible, please and thank you. That's what ESLint does for you.</p>
+                                    <p class="margin-bottom-15">Prettier is the JavaScript code formatter. It'll take your code however you write it, and reformat it in a way that's consistent and legible every time. People often give me quizzical looks when I refer to Prettier as a testing tool. But check this out:</p>
                                     <div class="post-media">
-                                        <img src="assets/images/image-box/blog-1-2.png" alt="images">
+                                        <img src="assets/images/image-box/blog-2-2.png" alt="images">
                                     </div>
-                                    <p class="margin-bottom-15">Now the interactions for this update will include information for this specific interaction based on the name of "form submitted".</p>
-                                    <p class="margin-bottom-15">The API for trace is: trace(id, startTimestamp, callbackThatTrigersUpdates)</p>
-                                    <h3 class="margin-bottom-15">Async tracing</h3>
-                                    <p class="margin-bottom-15">So what happens if this interaction is asynchronous? Should we have one trace for the state update and then another for the update when the response comes back? Wouldn't it be better to tie these two related updates together? Yes it would! Luckily there's support for that!</p>
-                                    <p class="margin-bottom-15">Say we have to fetch the greeting from a server. Let's rewrite this for that use case:</p>
+                                    <p class="margin-bottom-15">What's the value of d here? Do you know the order of operations of those operators by heart? If you do, great! But do you trust that all the engineers on your team know them well enough to not introduce a bug when refactoring this?</p>
+                                    <p class="margin-bottom-15">Run that code through Prettier, and this is what you get:</p>
                                     <div class="post-media">
-                                        <img src="assets/images/image-box/blog-1-3.png" alt="images">
+                                        <img src="assets/images/image-box/blog-2-3.png" alt="images">
                                     </div>
-                                    <p class="margin-bottom-15">To support tracing this, we'll use unstable_wrap:</p>
+                                    <p class="margin-bottom-15">Even if you do know the order of operations, the extra parentheses — which Prettier automatically adds when you save the file — are quite helpful. And if you realize that's not what you wanted, then you can add the parentheses yourself and Prettier will leave it that way (const d = a && (b || c)).</p>
+                                    <p class="margin-bottom-15">This is one example of things Prettier does to make the intent of your code more obvious — freeing your brain to focus on harder problems.</p>
+                                    <h3 class="margin-bottom-15">TypeScript</h3>
+                                    <p class="margin-bottom-15">These are static type checkers for JavaScript. A static type checker adds syntax to JavaScript to allow you to specify what data type a variable is. It can follow that variable through the code to make sure it's being used properly. (No more x is not a function.)</p>
+                                    <p class="margin-bottom-15">Can you spot the bug in this code?</p>
                                     <div class="post-media">
-                                        <img src="assets/images/image-box/blog-1-4.png" alt="images">
+                                        <img src="assets/images/image-box/blog-2-4.png" alt="images">
                                     </div>
-                                    <p class="margin-bottom-15">Go ahead and give it a try in your app. It definitely helps (especially the async stuff. Those little squares are clickable so you know which commits came from the interaction directly!).</p>
+                                    <p class="margin-bottom-15">Maybe you can, maybe you can't. Maybe your coworkers can, maybe they can't. In any case, wouldn't it be cool if we had some software that could spot the issue for us? Let's rewrite that function to TypeScript:</p>
+                                    <div class="post-media">
+                                        <img src="assets/images/image-box/blog-2-5.png" alt="images">
+                                    </div>
+                                    <p class="margin-bottom-15">I like to consider type definitions with TypeScript to be a form of inline automated tests. I strongly recommend you give it a shot if you haven't yet. Incremental adoption is possible with these tools (especially if you're already using babel, you can just start using babel-preset-typescript). Try it out on your next feature and see what you think.</p>
+                                    <h3 class="margin-bottom-15">Conclusion</h3>
+                                    <p class="margin-bottom-15">Static code analysis is a great way to get a significant boost of confidence — fast, easily, and with less effort than writing unit tests for the entire codebase. That's why it forms the base of the Testing Trophy 🏆. If you're not using these tools already, start now.</p>
                                 </div>
                                 <hr>
                             </article>
