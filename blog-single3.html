@@ -155,40 +155,41 @@
                         <div class="col-md-8">
                             <article class="post-inner">
                                 <div class="post-media">
-                                    <img src="assets/images/image-box/photo-1461016951828-c09537329b3a.jpeg" alt="images">
+                                    <img src="assets/images/image-box/photo-1551288049-bebda4e38f71.png" alt="images">
                                 </div>
                                 <div class="post-content margin-bottom-38">
                                     <ul class="post-meta">
                                         <li class="author section-14px-regular"><a href="blog.html">Karolos Mellatos</a></li>
-                                        <li class="date section-14px-regular"><a href="blog.html">8 Nov, 2021</a></li>
+                                        <li class="date section-14px-regular"><a href="blog.html">17 Oct, 2021</a></li>
                                     </ul>
-                                    <h2 class="section-24px-montserrat">Tracing user interactions with React</h2>
-                                    <p class="margin-top-20 margin-bottom-25">In my post "React Production Performance Monitoring", I show you how to use React's Profiler component to monitor the performance of your application in production. The information you get from this is useful, but really all it can tell you is: "Hey, the mount/update for this tree of components took x amount of time." Then you can graph that data and identify spikes/regressions in performance for that part of your app.</p>
-                                    <p class="margin-bottom-15">It would be even useful to have information about what interactions the user performed to trigger that update. For example: "Based on the data we have, when the user clicks the dropdown toggle button, the dropdown update is fast, but when they type into the field, the dropdown update is slower."</p>
-                                    <p class="margin-bottom-15">Another benefit to interaction tracing is it adds some context to what you can visualize in the React DevTools Profiler tab. We'll get a look at that soon.</p>
-                                    <h3 class="margin-bottom-15">Basic usage</h3>
-                                    <p class="margin-bottom-15">React does all of its scheduling through the scheduler package. Normally you don't interact with this directly, but this package is where you're going to get the APIs to instrument your components for interaction tracing.</p>
-                                    <p class="margin-bottom-15">Let's say you have a simple greeting component:</p>
+                                    <h2 class="section-24px-montserrat">React Production Performance Monitoring</h2>
+                                    <p class="margin-top-20 margin-bottom-25">We should always ship fast experiences to our users, but sometimes something slips through our PR review process and our users start having a slow experience. Unless they complain to us, we often have no way of knowing that things are going so slow for them. User complaints is not a great policy for quality control.</p>
+                                    <p class="margin-bottom-15">Because we can't make every user install the React DevTools and profile the app for us as they interact with it, it would be nice if we could somehow track some of the render times and get that information sent to our servers for us to monitor.</p>
+                                    <p class="margin-bottom-15">There are existing solutions for monitoring and measuring the performance of your app regardless of what framework you're using (Lighthouse CI is especially interesting). That said, the React team has created an API specifically for measuring the performance of your React components in production. It doesn't give us quite as much information as the React DevTools do, but it does give us some useful information that will help you determine where performance issues lie.</p>
+                                    <p class="margin-bottom-15">Here's a basic usage example of React's &lt;Profiler /&gt; component:</p>
                                     <div class="post-media">
-                                        <img src="assets/images/image-box/blog-1-1.png" alt="images">
+                                        <img src="assets/images/image-box/blog-3-1.png" alt="images">
                                     </div>
-                                    <p class="margin-bottom-15">When setGreeting is called, that triggers a state update. Let's assume we have reason to measure this interaction and monitor it in the long term (you don't necessarily want to add this complexity for every interaction). Here's how we'd do that:</p>
+                                    <p class="margin-bottom-15">The onRenderCallback function is called with the following arguments:</p>
                                     <div class="post-media">
-                                        <img src="assets/images/image-box/blog-1-2.png" alt="images">
+                                        <img src="assets/images/image-box/blog-3-2.png" alt="images">
                                     </div>
-                                    <p class="margin-bottom-15">Now the interactions for this update will include information for this specific interaction based on the name of "form submitted".</p>
-                                    <p class="margin-bottom-15">The API for trace is: trace(id, startTimestamp, callbackThatTrigersUpdates)</p>
-                                    <h3 class="margin-bottom-15">Async tracing</h3>
-                                    <p class="margin-bottom-15">So what happens if this interaction is asynchronous? Should we have one trace for the state update and then another for the update when the response comes back? Wouldn't it be better to tie these two related updates together? Yes it would! Luckily there's support for that!</p>
-                                    <p class="margin-bottom-15">Say we have to fetch the greeting from a server. Let's rewrite this for that use case:</p>
+                                    <p class="margin-bottom-15">It's important to note that unless you build your app using react-dom/profiling and scheduler/tracing-profiling this component wont do anything. You can learn how to set that up from my blog post Profile a React App for Performance.</p>
+                                    <p class="margin-bottom-15">From here, you'll want to send the onRenderCallback data to a monitoring tool (like Grafana for example). Because re-renders can happen a LOT, I'd personally suggest batching them up and sending them together every 5 seconds or so. For example:</p>
                                     <div class="post-media">
-                                        <img src="assets/images/image-box/blog-1-3.png" alt="images">
+                                        <img src="assets/images/image-box/blog-3-3.png" alt="images">
                                     </div>
-                                    <p class="margin-bottom-15">To support tracing this, we'll use unstable_wrap:</p>
+                                    <p class="margin-bottom-15">Something to keep in mind is that because this is running in production, React does it's best to not hurt performance in the measuring of it (which is pretty sensible). Because of this, we're limited in the information we can receive. So you'll probably want to strategically place &lt;Profiler /&gt; components in your app with sensible id props so you can determine the source of the performance issue more easily.</p>
+                                    <p class="margin-bottom-15">Note also that you can nest these:</p>
                                     <div class="post-media">
-                                        <img src="assets/images/image-box/blog-1-4.png" alt="images">
+                                        <img src="assets/images/image-box/blog-3-4.png" alt="images">
                                     </div>
-                                    <p class="margin-bottom-15">Go ahead and give it a try in your app. It definitely helps (especially the async stuff. Those little squares are clickable so you know which commits came from the interaction directly!).</p>
+                                    <p class="margin-bottom-15">In this case, if &lt;Content /&gt; were to get a rerender, the Content and Main profiler onRenderCallbacks would get called (not the Navigation one). If &lt;LeftNav /&gt; got a rerender, then Main would get called, but not Content or Navigation.</p>
+                                    <p class="margin-bottom-15">Here's an example of what the data looks like:</p>
+                                    <div class="post-media">
+                                        <img src="assets/images/image-box/blog-3-5.png" alt="images">
+                                    </div>
+                                    <p class="margin-bottom-15">Throwing this data into monitoring software could help you find some interesting trends and spot performance regressions (spikes).</p>
                                 </div>
                                 <hr>
                             </article>
@@ -200,41 +201,32 @@
                                     <ul class="widget-recent-post-item">
                                         <li>
                                             <div class="thumb-image border-radius-4">
-                                                <img src="assets/images/image-box/recent-post-1.jpg" alt="images">
+                                                <img src="assets/images/image-box/Copia de photo-1461016951828-c09537329b3a.jpeg" alt="images">
                                             </div>
                                             <div class="thumb-content">
                                                 <a href="blog-single.html"
-                                                    class="section-16px-regular font-weight-500 line-height-25">If they
-                                                    make a move we
-                                                    will hit them in the head</a><br>
-                                                <a href="blog-single.html" class="date section-14px-regular">15 Jun,
-                                                    2021 </a>
+                                                    class="section-16px-regular font-weight-500 line-height-25">Tracing user interactions with React</a><br>
+                                                <a href="blog-single.html" class="date section-14px-regular">8 Nov, 2021</a>
                                             </div>
                                         </li>
                                         <li>
                                             <div class="thumb-image border-radius-4">
-                                                <img src="assets/images/image-box/recent-post-2.jpg" alt="images">
+                                                <img src="assets/images/image-box/Copia de photo-1503789146722-cf137a3c0fea.png" alt="images">
                                             </div>
                                             <div class="thumb-content">
-                                                <a href="blog-single.html"
-                                                    class="section-16px-regular font-weight-500 line-height-25">When an
-                                                    unknown prin
-                                                    ter galley</a><br>
-                                                <a href="blog-single.html" class="date section-14px-regular">15 Jun,
-                                                    2021 </a>
+                                                <a href="blog-single2.html"
+                                                    class="section-16px-regular font-weight-500 line-height-25">Eliminate an entire category of bugs with a few simple tools</a><br>
+                                                <a href="blog-single2.html" class="date section-14px-regular">3 Nov, 2021</a>
                                             </div>
                                         </li>
                                         <li>
                                             <div class="thumb-image border-radius-4">
-                                                <img src="assets/images/image-box/recent-post-3.jpg" alt="images">
+                                                <img src="assets/images/image-box/Copia de photo-1551288049-bebda4e38f71.png" alt="images">
                                             </div>
                                             <div class="thumb-content">
-                                                <a href="blog-single.html"
-                                                    class="section-16px-regular font-weight-500 line-height-25">Survived
-                                                    not only five
-                                                    centuries</a><br>
-                                                <a href="blog-single.html" class="date section-14px-regular">15 Jun,
-                                                    2021 </a>
+                                                <a href="blog-single3.html"
+                                                    class="section-16px-regular font-weight-500 line-height-25">React Production Performance Monitoring</a><br>
+                                                <a href="blog-single3.html" class="date section-14px-regular">17 Oct, 2021</a>
                                             </div>
                                         </li>
                                     </ul>
